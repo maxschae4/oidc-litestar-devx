@@ -54,7 +54,8 @@
 	// forward ports
 	"forwardPorts": [
 		"demodev:8000",
-		"demodb:5432"
+		"demodb:5432",
+		"keycloak:8080"
 	],
 	// podman maps "root" to the user's UID/GID
 	// getting around this to use a non-root user in the devcontainer proves challenging

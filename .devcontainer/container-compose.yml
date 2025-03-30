@@ -27,6 +27,39 @@ services:
     networks:
       - demo
 
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:26.1.4
+    restart: unless-stopped
+    # volumes:
+    #   - ./config/keycloak/:/opt/keycloak/data/import
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: demo
+      KC_HEALTH_ENABLED: "true"
+    command: start-dev #--import-realm
+    ports:
+      - 8080:8080
+    networks:
+      - demo
+    healthcheck:
+      # leverage some linux esoterica to call and parse the health api
+      # https://stackoverflow.com/a/78229437
+      test: [
+        "CMD-SHELL",
+        ' exec 3<>/dev/tcp/localhost/9000;
+          echo -e "GET /health/ready HTTP/1.1\nhost: localhost:9000\n" >&3;
+          timeout --preserve-status 1 cat <&3 | grep --max-count=1 status | grep --max-count=1 UP;
+          ERROR=$?;
+          exec 3<&-;
+          exec 3>&-;
+          exit $ERROR
+        '
+      ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
 networks:
   demo:
     name: demo
