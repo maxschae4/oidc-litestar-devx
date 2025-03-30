@@ -1,0 +1,25 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch API",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/backend",
+            "module": "litestar",
+
+            "args": [
+                // specify pythonic path to Litestar instance definition
+                "--app", "api.app:app",
+                "run",
+                // add stack trace html output, server restart on code change
+                "--debug", "--reload",
+                // bind to local network, use port 8000
+                "--host", "0.0.0.0", "--port", "8000"
+            ],
+        }
+    ]
+}

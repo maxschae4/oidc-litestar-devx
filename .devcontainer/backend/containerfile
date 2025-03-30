@@ -1,0 +1,31 @@
+# Pre-built python devcontainer:
+# https://github.com/devcontainers/images/tree/main/src/python
+FROM mcr.microsoft.com/devcontainers/python:1-3.13-bookworm
+
+# Grab the psql client to make direct db access easy
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get install -yq --no-install-recommends \
+    postgresql-client-15 \
+    # clean up large apt artifacts
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+ARG \
+    # Version of uv to retrieve (limited to minor version to take any bugfixes)
+    UV_VERSION=0.6 \
+    # psql enhancements for usability
+    PGHOST="demodb" PGDATABASE="demo" PGUSER="demo" PGPASSWORD="demo"
+
+# Fetch the uv binary
+COPY --from=ghcr.io/astral-sh/uv:${UV_VERSION} /uv /bin/uv
+
+ENV \
+    # PYTHONUNBUFFERED=1 disables stdout buffering for python
+    PYTHONUNBUFFERED=1 \
+    # UV_COMPILE_BYTECODE=1 should improve speed a bit by precompiling bytecode for packages
+    UV_COMPILE_BYTECODE=1 \
+    # UV_LINK_MODE=copy tells UV to copy (without warning) instead of hardlink because we're working in a container
+    UV_LINK_MODE=copy \
+    # UV_PROJECT_ENVIRONMENT allows us to install to the system python in the container to simplify everything
+    UV_PROJECT_ENVIRONMENT="/usr/local/" \
+    # PSQL Simplification for development - definitely don't do this with the password in production
+    PGHOST=${PGHOST} PGDATABASE=${PGDATABASE} PGUSER=${PGUSER} PGPASSWORD=${PGPASSWORD}

@@ -1,0 +1,62 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+	"name": "demo-dev",
+	"dockerComposeFile": "../container-compose.yml",
+	"service": "demo-dev",
+	"workspaceFolder": "/demo",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"charliermarsh.ruff",
+				"ms-azuretools.vscode-docker",
+				"ms-python.mypy-type-checker",
+				"ms-python.vscode-pylance",
+				"ms-python.python"
+			],
+			"settings": {
+				"files.exclude": {
+					"**/.git": true,
+					"**/.svn": true,
+					"**/.hg": true,
+					"**/.DS_Store": true,
+					"**/Thumbs.db": true,
+					"**/__pycache__": true
+				},
+				"[python]": {
+					// vertical line indicating where ruff will wrap lines automatically
+					"editor.rulers": [88],
+					"editor.formatOnSave": true,
+					"editor.defaultFormatter": "charliermarsh.ruff",
+					"editor.codeActionsOnSave": {
+						// automatically organize imports
+						"source.organizeImports": "explicit",
+						// attempts to fix issues automatically
+						"source.fixAll": "explicit"
+					}
+				},
+				"mypy-type-checker.preferDaemon": true,
+				"mypy-type-checker.cwd": "${workspaceFolder}/backend",
+				// enable extra niceties
+				// https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance
+				"python.analysis.languageServerMode": "full",
+				"python.analysis.autoFormatStrings": true,
+				// having both of these and mypy running is overkill and duplicates some error messages.
+				// each of them adds different things as well
+				"python.languageServer": "Pylance",
+				"ruff.nativeServer": "on"
+			}
+		}
+	},
+	// install python dependencies
+	"postCreateCommand": "uv sync --frozen --no-install-project --all-groups --directory=./backend",
+
+	// forward ports
+	"forwardPorts": [
+		"demodev:8000",
+		"demodb:5432"
+	],
+	// podman maps "root" to the user's UID/GID
+	// getting around this to use a non-root user in the devcontainer proves challenging
+	"remoteUser": "root"
+}

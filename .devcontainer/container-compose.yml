@@ -1,0 +1,37 @@
+services:
+  demo-dev:
+    container_name: demodev
+    build:
+      context: ..
+      dockerfile: .devcontainer/backend/containerfile
+    volumes:
+      - ..:/demo
+    command: sleep infinity
+    networks:
+      - demo
+    depends_on: demodb
+
+  demodb:
+    container_name: demodb
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      # mount persistant volume for db data
+      - demodb:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_DB: demo
+      POSTGRES_PASSWORD: demo
+    ports:
+      - 5432:5432
+    networks:
+      - demo
+
+networks:
+  demo:
+    name: demo
+
+volumes:
+  # persistent volume for postgres data
+  demodb:
+    name: demodb
