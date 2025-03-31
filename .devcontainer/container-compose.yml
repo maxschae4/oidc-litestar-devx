@@ -31,13 +31,13 @@ services:
     container_name: keycloak
     image: quay.io/keycloak/keycloak:26.1.4
     restart: unless-stopped
-    # volumes:
-    #   - ./config/keycloak/:/opt/keycloak/data/import
+    volumes:
+      - ./config/keycloak/:/opt/keycloak/data/import
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: demo
       KC_HEALTH_ENABLED: "true"
-    command: start-dev #--import-realm
+    command: start-dev --import-realm
     ports:
       - 8080:8080
     networks:
@@ -64,8 +64,8 @@ services:
     container_name: oauth2-proxy
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.1
     hostname: oauth2-proxy
-    # volumes:
-    #   - "./config/oauth2-proxy.cfg:/oauth2-proxy.cfg"
+    volumes:
+      - "./config/oauth2-proxy.cfg:/oauth2-proxy.cfg"
     restart: unless-stopped
     command: --config /oauth2-proxy.cfg
     ports:
