@@ -37,11 +37,15 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: demo
       KC_HEALTH_ENABLED: "true"
+      KC_HOSTNAME: "https://keycloak.localhost:4443"
+      KC_PROXY_HEADERS: "forwarded"
     command: start-dev --import-realm
     ports:
       - 8080:8080
     networks:
       - demo
+    extra_hosts:
+      - "keycloak.localhost:host-gateway"
     healthcheck:
       # leverage some linux esoterica to call and parse the health api
       # https://stackoverflow.com/a/78229437
@@ -66,20 +70,37 @@ services:
     hostname: oauth2-proxy
     volumes:
       - "./config/oauth2-proxy.cfg:/oauth2-proxy.cfg"
+      # mount the ssl certs from caddy as read-only
+      - ./config/caddy/data:/ssl:ro
     restart: unless-stopped
     command: --config /oauth2-proxy.cfg
     ports:
       - 4180:4180
     networks:
       - demo
-    # don't write /etc/hosts in the container (and don't inherit the host's)
-    # this allows oidc discovery to work if the host has a conflicting entry
-    # e.g.
-    # 127.0.0.1  keycloak
-    x-podman.no_hosts: true
+    # the "nonroot" user is inherited, but we need "root" (host uid/gid) for the bind mount
+    user: root
+    extra_hosts:
+      - "keycloak.localhost:host-gateway"
     depends_on:
       keycloak:
         condition: service_healthy
+
+  caddy:
+    container_name: caddy
+    image: caddy:2.9-alpine
+    restart: unless-stopped
+    ports:
+      - "4480:80" # for http redirect
+      - "4443:443"
+      # - "4443:443/udp"
+    volumes:
+      - ./config/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_config:/config
+      # we'll bind mount the data directory locally for easy access to development certs
+      - ./config/caddy/data:/data:rw
+    networks:
+      - demo
 
 networks:
   demo:
@@ -89,3 +110,6 @@ volumes:
   # persistent volume for postgres data
   demodb:
     name: demodb
+  # persistent volume for caddy internal config
+  caddy_config:
+    name: caddy_config

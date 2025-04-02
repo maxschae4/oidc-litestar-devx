@@ -10,11 +10,15 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 ARG \
+    # Caddy version to retrieve
+    CADDY_VERSION=2.9 \
     # Version of uv to retrieve (limited to minor version to take any bugfixes)
     UV_VERSION=0.6 \
     # psql enhancements for usability
     PGHOST="demodb" PGDATABASE="demo" PGUSER="demo" PGPASSWORD="demo"
 
+# Fetch the caddy binary
+COPY --from=caddy:${CADDY_VERSION}-alpine /usr/bin/caddy /bin/caddy
 # Fetch the uv binary
 COPY --from=ghcr.io/astral-sh/uv:${UV_VERSION} /uv /bin/uv
 

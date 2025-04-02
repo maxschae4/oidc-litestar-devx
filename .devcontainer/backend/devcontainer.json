@@ -12,7 +12,8 @@
 				"ms-azuretools.vscode-docker",
 				"ms-python.mypy-type-checker",
 				"ms-python.vscode-pylance",
-				"ms-python.python"
+				"ms-python.python",
+				"matthewpi.caddyfile-support"
 			],
 			"settings": {
 				"files.exclude": {
@@ -56,7 +57,9 @@
 		"demodev:8000",
 		"demodb:5432",
 		"keycloak:8080",
-		"proxy:4180"
+		"oauth2-proxy:4180",
+		"caddy:4443",
+		"caddy:4480"
 	],
 	// podman maps "root" to the user's UID/GID
 	// getting around this to use a non-root user in the devcontainer proves challenging

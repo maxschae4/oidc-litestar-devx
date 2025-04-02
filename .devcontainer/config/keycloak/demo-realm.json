@@ -703,10 +703,10 @@
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
       "redirectUris": [
-        "http://proxy:4180/oauth2/callback"
+        "https://demo.localhost:4443/oauth2/callback"
       ],
       "webOrigins": [
-        "http://proxy:4180"
+        "https://demo.localhost:4443"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -723,7 +723,7 @@
         "request.object.signature.alg": "any",
         "request.object.encryption.alg": "any",
         "client.introspection.response.allow.jwt.claim.enabled": "false",
-        "post.logout.redirect.uris": "http://proxy:4180/",
+        "post.logout.redirect.uris": "https://demo.localhost:4443/",
         "frontchannel.logout.session.required": "true",
         "oauth2.device.authorization.grant.enabled": "false",
         "use.jwks.url": "false",
