@@ -1,5 +1,6 @@
 from litestar import Litestar, get
-from litestar.plugins.structlog import StructlogPlugin
+
+from api.log import LogPlugin
 
 
 @get("/")
@@ -17,6 +18,6 @@ async def favicon() -> None:
 
 app = Litestar(
     [index, favicon],
-    plugins=[StructlogPlugin()],
+    plugins=[LogPlugin],
     debug=True,
 )
